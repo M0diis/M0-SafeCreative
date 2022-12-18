@@ -1,0 +1,73 @@
+messages:
+  no-permission: "&cYou do not have permission to do this!"
+  player-not-found: "&cPlayer not found."
+  reloaded: "&aSuccessfully reloaded config."
+  inventory-not-empty: "&cYour inventory must be empty to switch to creative mode."
+
+clear-effects-on-switch: true # Clears all effects when switching gamemodes.
+
+prevent:
+  breaking-containers:
+    enabled: true
+    survival: true
+    creative: true
+    clear-contents-on-break: true
+    set-to-air: true
+    worlds:
+      - creative
+  switch-creative-with-items: true # Prevents switching to creative mode if the player has items in their inventory.
+  item-pickup:
+    enabled: true
+    creative: true
+    survival: true
+    tagged-items-only: true # Whether to only prevent pickup of tagged items in survival mode.
+    destroy: true # Whether to destroy the item after attempting to pick it up.
+    worlds:
+      - creative
+  potion-throw:
+    enabled: true
+    creative: true # Prevents throwing potions in creative mode.
+    survival: true # Prevents throwing potions in survival mode.
+    message: "&cYou can't throw potions in here."
+    worlds: # Prevents throwing potions in these worlds.
+      - creative
+  item-drop:
+    enabled: true
+    creative: true # Prevents item drop while in creative mode.
+    survival: true # Prevents item drop while in survival mode.
+    message: "&cYou can't drop items in here."
+    worlds: # Prevents item drop in these worlds.
+      - creative
+  portal-creation:
+    enabled: true
+    creative: true # Prevents creative players from creating portals.
+    survival: true # Prevents survival players from creating portals.
+    message: "&cYou can't create portals in here."
+    worlds:
+      - creative
+  opening-containers: # Chests, furnaces, etc.
+    enabled: true
+    creative: true
+    survival: true
+    message: "&cYou can't open containers in here."
+    worlds:
+      - creative
+  entity-spawn: # Prevents all kinds of entities (mobs, falling sand) from spawning in defined worlds.
+    enabled: true
+    worlds:
+      - creative
+
+restricted-items: # Prevents these items from being taken in creative mode.
+  enabled: true
+  message: "&cYou can't use this item in creative mode."
+  list:
+  - BEACON
+  - BEDROCK
+  - OAK_BOAT
+  - SPRUCE_BOAT
+  - BIRCH_BOAT
+  - JUNGLE_BOAT
+  - ACACIA_BOAT
+  - DARK_OAK_BOAT
+  - TOTEM_OF_UNDYING
+  - ENDER_CHEST

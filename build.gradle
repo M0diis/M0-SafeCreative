@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+group 'me.m0dii'
+version '1.0.0'
+
+archivesBaseName = 'M0-SafeCreative'
+
+shadowJar {
+    relocate 'org.bstats', 'me.m0dii.safecreative'
+    minimize()
+
+    archiveFileName = "M0-SafeCreative-${version}.jar"
+}
+
+processResources {
+    eachFile {
+        if (file.name.endsWith(".yml")) {
+            expand version: version
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    flatDir {
+        dirs 'libs'
+    }
+
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
+
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+
+    implementation "org.bstats:bstats-bukkit:2.2.1"
+
+    implementation 'com.github.M0diis:M0-PLLib:1.1.0'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}

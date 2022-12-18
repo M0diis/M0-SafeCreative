@@ -1,0 +1,10 @@
+main: me.m0dii.safecreative.SafeCreative
+name: SafeCreative
+author: M0dii
+version: ${version}
+api-version: 1.16
+commands:
+  saveinventory:
+    permission: safecreative.use
+    description: Safe creative command.
+    aliases: [safecr]
