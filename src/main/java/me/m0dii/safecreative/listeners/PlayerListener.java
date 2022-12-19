@@ -5,6 +5,7 @@ import me.m0dii.pllib.utils.TextUtils;
 import me.m0dii.safecreative.SafeCreative;
 import me.m0dii.safecreative.utils.Utils;
 import net.kyori.adventure.text.Component;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -19,16 +20,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -75,6 +74,14 @@ public class PlayerListener implements Listener {
         }
 
         if (mode.equals(GameMode.SURVIVAL)) {
+            if(cfg.getBoolean("prevent.switch-survival-with-items")) {
+                if (!InventoryUtils.isEmpty(inv)) {
+                    p.sendMessage(Utils.format(cfg.getString("messages.inventory-not-empty")));
+
+                    e.setCancelled(true);
+                }
+            }
+
             removeCreativeItems(inv);
         }
     }
@@ -407,35 +414,11 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void addCreativeTag(final InventoryCreativeEvent e) {
-        HumanEntity p = e.getView().getPlayer();
-
-        if(hasBypass(p)) {
+    public void cancelContainerOpen(final InventoryOpenEvent e) {
+        if(!cfg.getBoolean("prevent.opening-containers.enabled")) {
             return;
         }
 
-        ItemStack cursor = e.getCursor();
-
-        if (!cursor.getType().equals(Material.AIR)) {
-            ItemMeta cursorMeta = cursor.getItemMeta();
-
-            List<Component> lore = List.of(TextUtils.colorize("&4CREATIVE"));
-
-            cursorMeta.lore(lore);
-
-            cursor.setItemMeta(cursorMeta);
-
-            cursorMeta.getPersistentDataContainer().set(
-                    new NamespacedKey(this.plugin, "Type"),
-                    PersistentDataType.STRING, "CREATIVE"
-            );
-
-            e.setCursor(cursor);
-        }
-    }
-
-    @EventHandler
-    public void cancelContainerOpen(final InventoryOpenEvent e) {
         HumanEntity p = e.getPlayer();
 
         if(hasBypass(p) || p.hasPermission("safecreative.bypass.container-open")) {
@@ -444,10 +427,6 @@ public class PlayerListener implements Listener {
 
         if (p.getGameMode().equals(GameMode.SURVIVAL)) {
             removeCreativeItems(p.getInventory());
-        }
-
-        if(!cfg.getBoolean("prevent.opening-containers.enabled")) {
-            return;
         }
 
         World w = p.getWorld();
@@ -476,22 +455,21 @@ public class PlayerListener implements Listener {
                 e.setCancelled(true);
             }
         }
-
     }
 
     @EventHandler
     public void portalCreate(final PortalCreateEvent e) {
-        World w = e.getWorld();
+        if(!cfg.getBoolean("prevent.portal-creation.enabled")) {
+            return;
+        }
 
         if(!(e.getEntity() instanceof Player p)) {
             return;
         }
 
-        if(hasBypass(p) || p.hasPermission("safecreative.bypass.portal-create")) {
-            return;
-        }
+        World w = e.getWorld();
 
-        if(!cfg.getBoolean("prevent.portal-creation.enabled")) {
+        if(hasBypass(p) || p.hasPermission("safecreative.bypass.portal-create")) {
             return;
         }
 
@@ -510,6 +488,172 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
 
             p.sendMessage(Utils.format(cfg.getString("prevent.portal-creation.message")));
+        }
+    }
+
+    @EventHandler
+    public void addCreativeTag(final InventoryCreativeEvent e) {
+        HumanEntity p = e.getView().getPlayer();
+
+        if(hasBypass(p)) {
+            return;
+        }
+
+        ItemStack cursor = e.getCursor();
+
+        if (!cursor.getType().equals(Material.AIR)) {
+            ItemMeta cursorMeta = cursor.getItemMeta();
+
+            List<Component> lore = List.of(TextUtils.colorize("&4CREATIVE"));
+
+            cursorMeta.lore(lore);
+
+            cursor.setItemMeta(cursorMeta);
+
+            cursorMeta.getPersistentDataContainer().set(
+                    new NamespacedKey(this.plugin, "Type"),
+                    PersistentDataType.STRING, "CREATIVE"
+            );
+
+            e.setCursor(cursor);
+        }
+    }
+
+    @EventHandler
+    public void onBowShoot(final EntityShootBowEvent e) {
+        if(!cfg.getBoolean("prevent.bow-shoot.enabled")) {
+            return;
+        }
+
+        if(!(e.getEntity() instanceof Player p)) {
+            return;
+        }
+
+        World w = p.getWorld();
+
+        if(hasBypass(p) || p.hasPermission("safecreative.bypass.bow-shoot")) {
+            return;
+        }
+
+        if (cfg.getStringList("prevent.bow-shoot.worlds")
+                .stream().noneMatch(worldName -> worldName.equalsIgnoreCase(w.getName()))) {
+            return;
+        }
+
+        if(cfg.getBoolean("prevent.bow-shoot.survival") && p.getGameMode().equals(GameMode.SURVIVAL)) {
+            e.setCancelled(true);
+
+            p.sendMessage(Utils.format(cfg.getString("prevent.bow-shoot.message")));
+        }
+
+        if(cfg.getBoolean("prevent.bow-shoot.creative") && p.getGameMode().equals(GameMode.CREATIVE)) {
+            e.setCancelled(true);
+
+            p.sendMessage(Utils.format(cfg.getString("prevent.bow-shoot.message")));
+        }
+    }
+
+    @EventHandler
+    public void onPotionDrink(final PlayerItemConsumeEvent e) {
+        if(!cfg.getBoolean("prevent.potion-drink.enabled")) {
+            return;
+        }
+
+        Player p = e.getPlayer();
+
+        World w = p.getWorld();
+
+        if(hasBypass(p) || p.hasPermission("safecreative.bypass.potion-drink")) {
+            return;
+        }
+
+        if (cfg.getStringList("prevent.potion-drink.worlds")
+                .stream().noneMatch(worldName -> worldName.equalsIgnoreCase(w.getName()))) {
+            return;
+        }
+
+        if(cfg.getBoolean("prevent.potion-drink.survival") && p.getGameMode().equals(GameMode.SURVIVAL)) {
+            e.setCancelled(true);
+
+            p.sendMessage(Utils.format(cfg.getString("prevent.potion-drink.message")));
+        }
+
+        if(cfg.getBoolean("prevent.potion-drink.creative") && p.getGameMode().equals(GameMode.CREATIVE)) {
+            e.setCancelled(true);
+
+            p.sendMessage(Utils.format(cfg.getString("prevent.potion-drink.message")));
+        }
+    }
+
+    // prevent command execution
+    @EventHandler
+    public void onCommand(final PlayerCommandPreprocessEvent e) {
+        if(!cfg.getBoolean("prevent.command-execution.enabled")) {
+            return;
+        }
+
+        Player p = e.getPlayer();
+
+        if(hasBypass(p) || p.hasPermission("safecreative.bypass.command-execution")) {
+            return;
+        }
+
+        World w = p.getWorld();
+
+        if (cfg.getStringList("prevent.command-execution.worlds")
+                .stream().noneMatch(worldName -> worldName.equalsIgnoreCase(w.getName()))) {
+            return;
+        }
+
+        if (cfg.getBoolean("prevent.command-execution.commands.all")) {
+            if(cfg.getBoolean("prevent.command-execution.survival") && p.getGameMode().equals(GameMode.SURVIVAL)) {
+                e.setCancelled(true);
+
+                p.sendMessage(Utils.format(cfg.getString("prevent.command-execution.message")));
+            }
+
+            if(cfg.getBoolean("prevent.command-execution.creative") && p.getGameMode().equals(GameMode.CREATIVE)) {
+                e.setCancelled(true);
+
+                p.sendMessage(Utils.format(cfg.getString("prevent.command-execution.message")));
+            }
+        } else {
+            List<String> commands = cfg.getStringList("prevent.command-execution.commands.list");
+
+            if(cfg.getBoolean("prevent.command-execution.commands.blacklist")) {
+                if (cfg.getBoolean("prevent.command-execution.survival") && p.getGameMode().equals(GameMode.SURVIVAL)) {
+                    if (commands.stream().anyMatch(command -> StringUtils.startsWithIgnoreCase(e.getMessage(), command))) {
+                        e.setCancelled(true);
+
+                        p.sendMessage(Utils.format(cfg.getString("prevent.command-execution.message")));
+                    }
+                }
+
+                if(cfg.getBoolean("prevent.command-execution.creative") && p.getGameMode().equals(GameMode.CREATIVE)) {
+                    if (commands.stream().anyMatch(command -> StringUtils.startsWithIgnoreCase(e.getMessage(), command))) {
+                        e.setCancelled(true);
+
+                        p.sendMessage(Utils.format(cfg.getString("prevent.command-execution.message")));
+                    }
+                }
+            }
+            else {
+                if (cfg.getBoolean("prevent.command-execution.survival") && p.getGameMode().equals(GameMode.SURVIVAL)) {
+                    if (commands.stream().noneMatch(command -> StringUtils.startsWithIgnoreCase(e.getMessage(), command))) {
+                        e.setCancelled(true);
+
+                        p.sendMessage(Utils.format(cfg.getString("prevent.command-execution.message")));
+                    }
+                }
+
+                if(cfg.getBoolean("prevent.command-execution.creative") && p.getGameMode().equals(GameMode.CREATIVE)) {
+                    if (commands.stream().noneMatch(command -> StringUtils.startsWithIgnoreCase(e.getMessage(), command))) {
+                        e.setCancelled(true);
+
+                        p.sendMessage(Utils.format(cfg.getString("prevent.command-execution.message")));
+                    }
+                }
+            }
         }
     }
 

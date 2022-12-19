@@ -7,23 +7,30 @@ messages:
 clear-effects-on-switch: true # Clears all effects when switching gamemodes.
 
 prevent:
+  # Prevents breaking containers.
+  # Bypass permission: safecreative.bypass.container-break
   breaking-containers:
     enabled: true
-    survival: true
-    creative: true
-    clear-contents-on-break: true
-    set-to-air: true
+    survival: true # Prevents breaking containers in survival mode.
+    creative: true # Prevents breaking containers in creative mode.
+    clear-contents-on-break: true # Clears the contents of the container when broken.
+    set-to-air: true # Sets the container to air when broken.
     worlds:
       - creative
   switch-creative-with-items: true # Prevents switching to creative mode if the player has items in their inventory.
+  switch-survival-with-items: true # Prevents switching to survival mode if the player has items in their inventory.
+  # Prevents item pickup.
+  # Bypass permission: safecreative.bypass.item-pickup
   item-pickup:
     enabled: true
-    creative: true
-    survival: true
+    creative: true # Prevents item pickup in creative mode.
+    survival: true # Prevents item pickup in survival mode.
     tagged-items-only: true # Whether to only prevent pickup of tagged items in survival mode.
     destroy: true # Whether to destroy the item after attempting to pick it up.
     worlds:
       - creative
+  # Prevents potion throwing.
+  # Bypass permission: safecreative.bypass.potion-throw
   potion-throw:
     enabled: true
     creative: true # Prevents throwing potions in creative mode.
@@ -31,6 +38,26 @@ prevent:
     message: "&cYou can't throw potions in here."
     worlds: # Prevents throwing potions in these worlds.
       - creative
+  # Prevents potion drinking.
+  # Bypass permission: safecreative.bypass.potion-drink
+  potion-drink:
+    enabled: true
+    creative: true # Prevents throwing potions in creative mode.
+    survival: true # Prevents throwing potions in survival mode.
+    message: "&cYou can't drink potions in here."
+    worlds: # Prevents drinking potions in these worlds.
+      - creative
+  # Prevents item dropping.
+  # Bypass permission: safecreative.bypass.bow-shoot
+  bow-shoot:
+    enabled: true
+    creative: true # Prevents shooting bows in creative mode.
+    survival: true # Prevents shooting bows in survival mode.
+    message: "&cYou can't shoot bow in here."
+    worlds: # Prevents shooting bows in these worlds.
+      - creative
+  # Prevents item dropping.
+  # Bypass permission: safecreative.bypass.item-drop
   item-drop:
     enabled: true
     creative: true # Prevents item drop while in creative mode.
@@ -38,26 +65,50 @@ prevent:
     message: "&cYou can't drop items in here."
     worlds: # Prevents item drop in these worlds.
       - creative
+  # Prevents command execution.
+  # Bypass permission: safecreative.bypass.command-execution
+  command-execution:
+    enabled: true
+    creative: true # Prevents command execution while in creative mode.
+    survival: true # Prevents command execution while in survival mode.
+    message: "&cYou can't use this command here."
+    worlds: # Prevents command execution in these worlds.
+      - creative
+    commands:
+      all: false # Prevents all commands, whether they're listed or not.
+      # If true (blacklist), it will only block the commands listed below.
+      # Else, it will block all commands except the ones listed below.
+      blacklist: true
+      list:
+        - '/auction'
+  # Prevents portal creation.
+  # Bypass permission: safecreative.bypass.portal-creation
   portal-creation:
     enabled: true
     creative: true # Prevents creative players from creating portals.
     survival: true # Prevents survival players from creating portals.
     message: "&cYou can't create portals in here."
-    worlds:
+    worlds: # Prevents portal creation in these worlds.
       - creative
-  opening-containers: # Chests, furnaces, etc.
+  # Prevents players from opening containers (chests, furnaces, anvils, etc.) in creative mode.
+  # Bypass permission: safecreative.bypass.container-open
+  opening-containers:
     enabled: true
     creative: true
     survival: true
     message: "&cYou can't open containers in here."
     worlds:
       - creative
-  entity-spawn: # Prevents all kinds of entities (mobs, falling sand) from spawning in defined worlds.
+  # Prevents all kinds of entities (mobs, falling sand, item drops) from spawning and appearing in defined worlds.
+  # This is useful for preventing mobs from spawning in creative worlds.
+  entity-spawn:
     enabled: true
     worlds:
       - creative
 
-restricted-items: # Prevents these items from being taken in creative mode.
+# Prevents items from being taken in creative mode.
+# Bypass permission: safecreative.bypass.item-restriction
+restricted-items:
   enabled: true
   message: "&cYou can't use this item in creative mode."
   list:
