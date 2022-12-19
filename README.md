@@ -4,12 +4,13 @@
 [resourceId]: 106821
 
 [ratingImage]: https://img.shields.io/badge/dynamic/json.svg?color=brightgreen&label=rating&query=%24.rating.average&suffix=%20%2F%205&url=https%3A%2F%2Fapi.spiget.org%2Fv2%2Fresources%2F106821
-
+[buildImage]: https://github.com/M0diis/M0-SafeCreative/actions/workflows/gradle.yml/badge.svg
 [downloadsImage]: https://img.shields.io/badge/dynamic/json.svg?color=brightgreen&label=downloads%20%28spigotmc.org%29&query=%24.downloads&url=https%3A%2F%2Fapi.spiget.org%2Fv2%2Fresources%2F106821
 [updatedImage]: https://badges.pufler.dev/updated/M0diis/M0-SafeCreative
 
 <!-- End of variables block -->
 
+![build][buildImage] 
 ![downloads][downloadsImage] ![rating][ratingImage]
 
 ## SafeCreative
