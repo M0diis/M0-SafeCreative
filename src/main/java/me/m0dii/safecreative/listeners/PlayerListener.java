@@ -12,10 +12,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Container;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -358,8 +355,6 @@ public class PlayerListener implements Listener {
 
             p.sendMessage(Utils.format(cfg.getString("prevent.item-drop.message")));
         }
-
-
     }
 
     @EventHandler
@@ -368,16 +363,38 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        World w = e.getEntity().getWorld();
+        final World w = e.getEntity().getWorld();
 
         if (cfg.getStringList("prevent.entity-spawn.worlds")
                 .stream().noneMatch(worldName -> worldName.equalsIgnoreCase(w.getName()))) {
             return;
         }
 
-        e.setCancelled(true);
+        if(cfg.getBoolean("prevent.entity-spawn.entities.all")) {
+            e.setCancelled(true);
 
-        e.getEntity().remove();
+            e.getEntity().remove();
+
+            return;
+        }
+
+        List<String> entityTypeList = cfg.getStringList("prevent.entity-spawn.entities.list");
+
+        if(cfg.getBoolean("prevent.entity-spawn.entities.blacklist")) {
+            if (entityTypeList.stream()
+                    .anyMatch(entityName -> entityName.equalsIgnoreCase(e.getEntityType().name()))) {
+                e.setCancelled(true);
+
+                e.getEntity().remove();
+            }
+        } else {
+            if (entityTypeList.stream()
+                    .noneMatch(entityName -> entityName.equalsIgnoreCase(e.getEntityType().name()))) {
+                e.setCancelled(true);
+
+                e.getEntity().remove();
+            }
+        }
     }
 
     @EventHandler
@@ -386,13 +403,13 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        HumanEntity p = e.getView().getPlayer();
+        final HumanEntity p = e.getView().getPlayer();
 
         if(hasBypass(p) || p.hasPermission("safecreative.bypass.item-restriction")) {
             return;
         }
 
-        ItemStack cursor = e.getCursor();
+        final ItemStack cursor = e.getCursor();
 
         if (cursor == null || cursor.getType().isAir()) {
             return;
@@ -419,7 +436,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        HumanEntity p = e.getPlayer();
+        final HumanEntity p = e.getPlayer();
 
         if(hasBypass(p) || p.hasPermission("safecreative.bypass.container-open")) {
             return;
@@ -429,14 +446,14 @@ public class PlayerListener implements Listener {
             removeCreativeItems(p.getInventory());
         }
 
-        World w = p.getWorld();
+        final World w = p.getWorld();
 
         if(cfg.getStringList("prevent.opening-containers.worlds")
             .stream().noneMatch(worldName -> worldName.equalsIgnoreCase(w.getName()))) {
             return;
         }
 
-        InventoryType type = e.getInventory().getType();
+        final InventoryType type = e.getInventory().getType();
 
         if (p.getGameMode().equals(GameMode.CREATIVE)) {
             if (!type.equals(InventoryType.CREATIVE)) {
@@ -467,7 +484,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        World w = e.getWorld();
+        final World w = e.getWorld();
 
         if(hasBypass(p) || p.hasPermission("safecreative.bypass.portal-create")) {
             return;
@@ -493,13 +510,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void addCreativeTag(final InventoryCreativeEvent e) {
-        HumanEntity p = e.getView().getPlayer();
+        final HumanEntity p = e.getView().getPlayer();
 
         if(hasBypass(p)) {
             return;
         }
 
-        ItemStack cursor = e.getCursor();
+        final ItemStack cursor = e.getCursor();
 
         if (!cursor.getType().equals(Material.AIR)) {
             ItemMeta cursorMeta = cursor.getItemMeta();
@@ -529,7 +546,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        World w = p.getWorld();
+        final World w = p.getWorld();
 
         if(hasBypass(p) || p.hasPermission("safecreative.bypass.bow-shoot")) {
             return;
@@ -559,13 +576,13 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Player p = e.getPlayer();
-
-        World w = p.getWorld();
+        final Player p = e.getPlayer();
 
         if(hasBypass(p) || p.hasPermission("safecreative.bypass.potion-drink")) {
             return;
         }
+
+        final World w = p.getWorld();
 
         if (cfg.getStringList("prevent.potion-drink.worlds")
                 .stream().noneMatch(worldName -> worldName.equalsIgnoreCase(w.getName()))) {
@@ -585,20 +602,19 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // prevent command execution
     @EventHandler
     public void onCommand(final PlayerCommandPreprocessEvent e) {
         if(!cfg.getBoolean("prevent.command-execution.enabled")) {
             return;
         }
 
-        Player p = e.getPlayer();
+        final Player p = e.getPlayer();
 
         if(hasBypass(p) || p.hasPermission("safecreative.bypass.command-execution")) {
             return;
         }
 
-        World w = p.getWorld();
+        final  World w = p.getWorld();
 
         if (cfg.getStringList("prevent.command-execution.worlds")
                 .stream().noneMatch(worldName -> worldName.equalsIgnoreCase(w.getName()))) {
@@ -618,7 +634,7 @@ public class PlayerListener implements Listener {
                 p.sendMessage(Utils.format(cfg.getString("prevent.command-execution.message")));
             }
         } else {
-            List<String> commands = cfg.getStringList("prevent.command-execution.commands.list");
+            final List<String> commands = cfg.getStringList("prevent.command-execution.commands.list");
 
             if(cfg.getBoolean("prevent.command-execution.commands.blacklist")) {
                 if (cfg.getBoolean("prevent.command-execution.survival") && p.getGameMode().equals(GameMode.SURVIVAL)) {

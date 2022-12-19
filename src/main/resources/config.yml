@@ -100,9 +100,15 @@ prevent:
     worlds:
       - creative
   # Prevents all kinds of entities (mobs, falling sand, item drops) from spawning and appearing in defined worlds.
-  # This is useful for preventing mobs from spawning in creative worlds.
   entity-spawn:
     enabled: true
+    entities:
+      all: true # Prevents all entities from spawning, whether they're listed or not.
+      # If true (blacklist), it will only block the entities listed below.
+      # Else, it will block all entities except the ones listed below.
+      blacklist: true
+      # Entity names can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html
+      list: []
     worlds:
       - creative
 
