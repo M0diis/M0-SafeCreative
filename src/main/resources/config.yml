@@ -3,28 +3,38 @@ messages:
   player-not-found: "&cPlayer not found."
   reloaded: "&aSuccessfully reloaded config."
   inventory-not-empty: "&cYour inventory must be empty to switch to creative mode."
+  protection-enabled: "&aYou have enabled creative mode protection."
+  protection-disabled: "&cYou have disabled creative mode protection."
 
-clear-effects-on-switch: true # Clears all effects when switching gamemodes.
+clear-effects-on-switch: true # Clears all potion effects when switching gamemodes.
 
+# If you wish the feature to work in all worlds, leave the list empty.
 prevent:
+  # Prevents switching to creative mode if the player has items in their inventory.
+  # Bypass permission: safecreative.bypass.gamemode-switch-empty
+  switch-creative-with-items: true
+  # Prevents switching to survival mode if the player has items in their inventory.
+  # Bypass permission: safecreative.bypass.gamemode-switch-empty
+  switch-survival-with-items: true
   # Prevents breaking containers.
   # Bypass permission: safecreative.bypass.container-break
   breaking-containers:
     enabled: true
     survival: true # Prevents breaking containers in survival mode.
     creative: true # Prevents breaking containers in creative mode.
+    only-not-empty: true # Prevents breaking containers only if they are not empty.
+    message-not-empty: "&cYou cannot break this container because it is not empty."
     clear-contents-on-break: true # Clears the contents of the container when broken.
-    set-to-air: true # Sets the container to air when broken.
+    set-to-air: true # Sets the container to air when broken (or attempted to break).
     worlds:
       - creative
-  switch-creative-with-items: true # Prevents switching to creative mode if the player has items in their inventory.
-  switch-survival-with-items: true # Prevents switching to survival mode if the player has items in their inventory.
   # Prevents item pickup.
   # Bypass permission: safecreative.bypass.item-pickup
   item-pickup:
     enabled: true
     creative: true # Prevents item pickup in creative mode.
     survival: true # Prevents item pickup in survival mode.
+    adventure: true # Prevents item pickup in adventure mode.
     tagged-items-only: true # Whether to only prevent pickup of tagged items in survival mode.
     destroy: true # Whether to destroy the item after attempting to pick it up.
     worlds:
@@ -53,7 +63,8 @@ prevent:
     enabled: true
     creative: true # Prevents shooting bows in creative mode.
     survival: true # Prevents shooting bows in survival mode.
-    message: "&cYou can't shoot bow in here."
+    crossbow: true
+    message: "&cYou can't shoot bow here."
     worlds: # Prevents shooting bows in these worlds.
       - creative
   # Prevents item dropping.
@@ -62,7 +73,7 @@ prevent:
     enabled: true
     creative: true # Prevents item drop while in creative mode.
     survival: true # Prevents item drop while in survival mode.
-    message: "&cYou can't drop items in here."
+    message: "&cYou can't drop items here."
     worlds: # Prevents item drop in these worlds.
       - creative
   # Prevents command execution.
@@ -87,7 +98,7 @@ prevent:
     enabled: true
     creative: true # Prevents creative players from creating portals.
     survival: true # Prevents survival players from creating portals.
-    message: "&cYou can't create portals in here."
+    message: "&cYou can't create portals here."
     worlds: # Prevents portal creation in these worlds.
       - creative
   # Prevents players from opening containers (chests, furnaces, anvils, etc.) in creative mode.
@@ -96,9 +107,61 @@ prevent:
     enabled: true
     creative: true
     survival: true
-    message: "&cYou can't open containers in here."
+    message: "&cYou can't open containers here."
     worlds:
       - creative
+  # Prevents creative mode players from flying.
+  # Will prevent all kind of attempts to fly.
+  # Bypass permission: safecreative.bypass.fly
+  fly:
+    enabled: false
+    message: "&cYou can't fly in here."
+    worlds:
+      - creative
+  # Prevents players from interacting with item frames and armor stands.
+  # Bypass permission: safecreative.bypass.interact-frame-armor-stand
+  interact-frame-armor-stand:
+    enabled: true
+    creative: true
+    survival: true
+    message: "&cYou can't interact with item frames and armor stands here."
+    worlds:
+      - creative
+  # Prevents players from damaging animals, mobs, and other players.
+  # Bypass permission: safecreative.bypass.damage
+  damage:
+    enabled: true
+    creative: true
+    survival: true
+    animals: true
+    mobs: true
+    players: true
+    message: "&cYou can't damage entities here."
+    worlds:
+      - creative
+  # Prevents experience orbs from being picked up.
+  # Bypass permission: safecreative.bypass.exp-pickup
+  exp-pickup:
+    enabled: true
+    creative: true
+    survival: true
+    worlds:
+      - creative
+  # Prevents fishing.
+  # Bypass permission: safecreative.bypass.fishing
+  fishing:
+    enabled: true
+    creative: true
+    survival: true
+    only-players: true # Whether to only prevent fishing players.
+    worlds:
+      - creative
+  # Prevents breaking creative-mode placed blocks in survival mode.
+  # Bypass permission: safecreative.bypass.survival-break-creative-placed
+  survival-break-creative-placed:
+    enabled: true
+    set-to-air: true # Whether to destroy the block when breaking it or just cancel the break.
+    message: "&cBroken block was placed in creative."
   # Prevents all kinds of entities (mobs, falling sand, item drops) from spawning and appearing in defined worlds.
   entity-spawn:
     enabled: true
@@ -111,6 +174,7 @@ prevent:
       list: []
     worlds:
       - creative
+
 
 # Prevents items from being taken in creative mode.
 # Bypass permission: safecreative.bypass.item-restriction

@@ -11,12 +11,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-public class SafeCreative extends JavaPlugin {
-    private static SafeCreative instance;
+public class SafeCreativePlugin extends JavaPlugin {
+    private static SafeCreativePlugin instance;
     private PluginManager pm;
     private ConfigManager configManager;
 
-    public static SafeCreative getInstance() {
+    public static SafeCreativePlugin getInstance() {
         return instance;
     }
 

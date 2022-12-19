@@ -1,5 +1,7 @@
 package me.m0dii.safecreative.commands;
 
+import me.m0dii.safecreative.SafeCreativePlugin;
+import me.m0dii.safecreative.listeners.PlayerListener;
 import me.m0dii.safecreative.utils.Utils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
@@ -16,8 +18,8 @@ import java.util.stream.Stream;
 
 public class SafeCreative implements CommandExecutor, TabCompleter {
     private final FileConfiguration cfg;
-    private final me.m0dii.safecreative.SafeCreative plugin;
-    public SafeCreative(me.m0dii.safecreative.SafeCreative plugin) {
+    private final SafeCreativePlugin plugin;
+    public SafeCreative(SafeCreativePlugin plugin) {
 
         this.cfg = plugin.getCfg();
         this.plugin = plugin;
@@ -35,6 +37,52 @@ public class SafeCreative implements CommandExecutor, TabCompleter {
             plugin.getConfigManager().reloadConfig();
 
             sender.sendMessage(Utils.format(cfg.getString("messages.reloaded")));
+
+            return true;
+        }
+
+        if(isArgument(0, args, "toggle")) {
+            if(!sender.hasPermission("safecreative.command.toggle")) {
+                sender.sendMessage(Utils.format(cfg.getString("messages.no-permission")));
+
+                return true;
+            }
+
+            PlayerListener.toggleEnabled();
+
+            if(PlayerListener.isEnabled()) {
+                sender.sendMessage(Utils.format(cfg.getString("messages.protection-enabled")));
+            } else {
+                sender.sendMessage(Utils.format(cfg.getString("messages.protection-disabled")));
+            }
+
+            return true;
+        }
+
+        if(isArgument(0, args, "on")) {
+            if(!sender.hasPermission("safecreative.command.on")) {
+                sender.sendMessage(Utils.format(cfg.getString("messages.no-permission")));
+
+                return true;
+            }
+
+            PlayerListener.setEnabled(true);
+
+            sender.sendMessage(Utils.format(cfg.getString("messages.protection-enabled")));
+
+            return true;
+        }
+
+        if(isArgument(0, args, "off")) {
+            if(!sender.hasPermission("safecreative.command.off")) {
+                sender.sendMessage(Utils.format(cfg.getString("messages.no-permission")));
+
+                return true;
+            }
+
+            PlayerListener.setEnabled(false);
+
+            sender.sendMessage(Utils.format(cfg.getString("messages.protection-disabled")));
 
             return true;
         }

@@ -1,10 +1,53 @@
-main: me.m0dii.safecreative.SafeCreative
+main: me.m0dii.safecreative.SafeCreativePlugin
 name: SafeCreative
 author: M0dii
 version: ${version}
 api-version: 1.16
 commands:
-  saveinventory:
+  safecreative:
     permission: safecreative.use
     description: Safe creative command.
     aliases: [safecr]
+permissions:
+  safecreative.bypass.container-break:
+    description:  Allows the player to break containers.
+    default: op
+  safecreative.bypass.item-pickup:
+    description:  Allows the player to pick up items.
+    default: op
+  safecreative.bypass.potion-throw:
+    description:  Allows the player to throw potions.
+    default: op
+  safecreative.bypass.potion-drink:
+    description:  Allows the player to drink potions.
+    default: op
+  safecreative.bypass.bow-shoot:
+    description:  Allows the player to shoot bows.
+    default: op
+  safecreative.bypass.item-drop:
+    description:  Allows the player to drop items.
+    default: op
+  safecreative.bypass.command-execution:
+    description:  Allows the player to execute commands.
+    default: op
+  safecreative.bypass.portal-creation:
+    description:  Allows the player to create portals.
+    default: op
+  safecreative.bypass.container-open:
+    description:  Allows the player to open containers.
+    default: op
+  safecreative.bypass.fly:
+    description:  Allows the player to fly.
+    default: op
+  safecreative.bypass.interact-frame-armor-stand:
+    description:  Allows the player to interact with item frames and armor stands.
+    default: op
+  safecreative.bypass.item-restriction:
+    description:  Allows the player to use restricted items.
+    default: op
+  safecreative.bypass.damage:
+    description:  Allows the player to damage entities.
+    default: op
+  safecreative.bypass.gamemode-switch-empty:
+    description:  Allows the player to switch gamemode while inventory is not empty.
+    default: op
